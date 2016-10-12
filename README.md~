@@ -1,0 +1,8 @@
+# ns satellite
+## 开始进行GEO/LEO连接
+####  由于在添加GEO/LEO链路切换handoff时，调用的check_elevation()函数中，官方的源码是默认地面终端的，所以在计算GEO/LEO时就会发生错误。直接改成和终端比较问题就都解决啦～～只是现在依然有间歇式的大面积丢包，不知原因，正在排查
+####  现在c的编译和tcl的运行都可以了，但是会出现大面积的丢包，还需继续研究：
+	1.看看satroute和satposition那里怎么改
+	2.看看如何在建立gsl时只设置uplink_
+####  主要修改ns-2.35/satellite里的一些文件，如链路什么的，然后make clean，再make
+
