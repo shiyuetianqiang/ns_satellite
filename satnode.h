@@ -57,6 +57,7 @@ class SatNode : public Node {
 	// Each SatNode has a ragent_ (may be NULL), position_, a 
 	// trace_ (may be NULL), and a hm_ (may be NULL)  
 	SatRouteAgent* ragent() { return ragent_; }
+	void setRagent(SatRouteAgent* r){ragent_=r;}//zsd
 	SatPosition* position() { return pos_; }
 	SatTrace* trace() { return trace_; }
 	// The uplink_ and downlink_ variables allow us to avoid searching

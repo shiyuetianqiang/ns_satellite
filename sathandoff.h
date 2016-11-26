@@ -43,6 +43,7 @@
 #include "rng.h"
 #include "node.h"
 #include <math.h>
+#include "satroute.h"//zsd
 
 // Handoff manager types
 #define LINKHANDOFFMGR_SAT 1
@@ -110,6 +111,8 @@ protected:
 	TermHandoffTimer timer_;
 	static double elevation_mask_;
 	static int term_handoff_int_;
+	SatRouteAgent* old_ragent_;//zsd
+	int old_nodeid_;//zsd
 };
 
 #endif

@@ -193,6 +193,8 @@ TermLinkHandoffMgr::TermLinkHandoffMgr() : timer_(this)
 {
 	bind("elevation_mask_", &elevation_mask_);
 	bind("term_handoff_int_", &term_handoff_int_);
+	this->old_ragent_=0;//zsd
+	this->old_nodeid_=0;//zsd
 }
 
 // 
@@ -307,10 +309,23 @@ int TermLinkHandoffMgr::handoff()
 				slhp->phy_rx()->setchnl(peer_->downlink());
 				// Add phy to channel's linked list of i/fces
 				slhp->phy_rx()->insertchnl(&(peer_->downlink()->ifhead_));
+
+				//zsd
+				if(this->old_ragent_ && this->old_nodeid_){
+					peer_->setRagent(this->old_ragent_);
+					peer_->setNodeid(this->old_nodeid_);
+					link_changes_flag_=FALSE;
+					printf("sathandoff.cc : peer_->setRagent(this->old_ragent_); nodeid=%d \n",peer_->nodeid());
+				}//zsd
+				else{
+					this->old_ragent_=peer_->ragent();
+					this->old_nodeid_=peer_->nodeid();
+				}//zsd
 			}
 		}
 	}
 	if (link_changes_flag_) { 
+		printf("sathandoff.cc : recompute\n");//zsd
 		SatRouteObject::instance().recompute();
 	}
 	if (restart_timer_flag_) {
@@ -530,7 +545,7 @@ int SatLinkHandoffMgr::handoff()
 		//printf("sathandoff.cc : //zsd geo handoff LINK_ISL_INTERLAYER 1_0\n");//zsd
 		//printf("handoff LINK_ISL_INTERLAYER\n");
 		peer_ = get_peer(slhp);
-		if (peer_) {//ÕâÀïÅÐ¶Ï¸ÃÎÀÐÇÓÐÃ»ÓÐ³¬³öÐÇ¼äÑö½ÇµÄ·¶Î§
+		if (peer_) {//ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶Ï¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ð³ï¿½ï¿½ï¿½ï¿½Ç¼ï¿½ï¿½ï¿½ï¿½ÇµÄ·ï¿½Î§
 			//printf("sathandoff.cc : //zsd geo handoff LINK_ISL_INTERLAYER 1_0_0\n");//zsd
 			local_coord_ = peer_->position()->coord();
 			//printf("sathandoff.cc : //zsd geo handoff LINK_ISL_INTERLAYER 1_0_0_0\n");//zsd
@@ -560,14 +575,14 @@ int SatLinkHandoffMgr::handoff()
 		//printf("handoff LINK_ISL_INTERLAYER 1\n");
 		if (!slhp->linkup_)
 		{
-			// If link is down, see if we can use another satellite           ÕâÀïÓÐ½âÊÍ
+			// If link is down, see if we can use another satellite           ï¿½ï¿½ï¿½ï¿½ï¿½Ð½ï¿½ï¿½ï¿½
 			//
 			// As an optimization, first check the next satellite
 			// coming over the horizon.  Next, consider all
 			// remaining satellites.
 			//
 			//printf("sathandoff.cc : //zsd geo handoff LINK_ISL_INTERLAYER 1_2\n");//zsd
-			if (peer_)                     // Ê×ÏÈ¿´ºÍÆäÏàÁ¬µÄ¸ß²ãÎÀÐÇµÄÏÂÒ»¿ÅÎÀÐÇÊÇ·ñÔÚºÏÊÊµÄÑö½Ç·¶Î§ÄÚ
+			if (peer_)                     // ï¿½ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¸ß²ï¿½ï¿½ï¿½ï¿½Çµï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Úºï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½Ç·ï¿½Î§ï¿½ï¿½
 			{
 				//printf("handoff LINK_ISL_INTERLAYER 1_1\n");
 				// Next satellite
@@ -597,7 +612,7 @@ int SatLinkHandoffMgr::handoff()
 			}
 			//printf("handoff LINK_ISL_INTERLAYER 2\n");
 			// Next, check all remaining satellites if not found
-			if (!found_elev_)                                          ///Èç¹ûÏÂÒ»¿ÅÎÀÐÇ²»ºÏÊÊ£¬ÄÇÃ´ËÑË÷ËùÓÐ¸ß²ãµÄmeoÎÀÐÇ£¬¿´¿´ÓÐÃ»ÓÐºÏÊÊµÄ
+			if (!found_elev_)                                          ///ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ç²ï¿½ï¿½ï¿½ï¿½Ê£ï¿½ï¿½ï¿½Ã´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¸ß²ï¿½ï¿½ï¿½meoï¿½ï¿½ï¿½Ç£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½Ðºï¿½ï¿½Êµï¿½
 			{
 				for (nodep = Node::nodehead_.lh_first; nodep;
 				nodep = nodep->nextnode())
@@ -607,7 +622,7 @@ int SatLinkHandoffMgr::handoff()
 					peer_ = (SatNode*)nodep;
 					if (peer_->position() &&
 						(peer_->position()->type() !=
-							POSITION_SAT_GEO))                        //Ö»ÁôÏÂGEO×ö¼ìË÷//zsd
+							POSITION_SAT_GEO))                        //Ö»ï¿½ï¿½ï¿½ï¿½GEOï¿½ï¿½ï¿½ï¿½ï¿½ï¿½//zsd
 						continue;
 					local_coord_ =
 						peer_->position()->coord();
@@ -626,7 +641,7 @@ int SatLinkHandoffMgr::handoff()
 				}
 			}
 			//printf("handoff LINK_ISL_INTERLAYER 3\n");
-			if (found_elev_)                       //Èç¹ûÕÒµ½ºÏÊÊµÄÎÀÐÇ£¬Òª½øÐÐÁ´½Ó
+			if (found_elev_)                       //ï¿½ï¿½ï¿½ï¿½ï¿½Òµï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½Ç£ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			{
 				slhp->linkup_ = TRUE;
 				link_changes_flag_ = TRUE;
