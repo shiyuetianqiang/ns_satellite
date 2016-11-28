@@ -113,6 +113,7 @@ protected:
 	static int term_handoff_int_;
 	SatRouteAgent* old_ragent_;//zsd
 	int old_nodeid_;//zsd
+	int old_address_;//zsd
 };
 
 #endif

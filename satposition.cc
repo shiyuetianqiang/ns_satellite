@@ -101,6 +101,7 @@ double SatPosition::time_advance_ = 0;
 
 SatPosition::SatPosition() : node_(0)  
 {
+	//注释了依然不切换，但感觉这里是突破口。可以把下面的NOW去掉，使卫星彻底不动//zsd
         bind("time_advance_", &time_advance_);
 }
 
@@ -164,8 +165,9 @@ coordinate TermSatPosition::coord()
 
 	current.r = initial_.r;
 	current.theta = initial_.theta;
-	current.phi = fmod((initial_.phi + 
-	    (fmod(NOW + time_advance_,period_)/period_) * 2*PI), 2*PI);
+	//current.phi = fmod((initial_.phi + 
+	  //  (fmod(NOW + time_advance_,period_)/period_) * 2*PI), 2*PI);
+	current.phi = fmod((initial_.phi + (fmod( time_advance_,period_)/period_) * 2*PI), 2*PI);//zsd
 
 #ifdef POINT_TEST
 	current = initial_; // debug option to stop earth's rotation
@@ -247,8 +249,9 @@ coordinate PolarSatPosition::coord()
 {
 	coordinate current;
 	double partial;  // fraction of orbit period completed
-	partial = 
-	    (fmod(NOW + time_advance_, period_)/period_) * 2*PI; //rad
+	//partial = 
+	  //  (fmod(NOW + time_advance_, period_)/period_) * 2*PI; //rad
+	partial = (fmod(time_advance_, period_)/period_) * 2*PI;//zsd
 	double theta_cur, phi_cur, theta_new, phi_new;
 
 	// Compute current orbit-centric coordinates:
@@ -291,7 +294,8 @@ coordinate PolarSatPosition::coord()
 //
 bool PolarSatPosition::isascending()
 {	
-	double partial = (fmod(NOW + time_advance_, period_)/period_) * 2*PI; //rad
+	//double partial = (fmod(NOW + time_advance_, period_)/period_) * 2*PI; //rad
+	double partial = (fmod(time_advance_, period_)/period_) * 2*PI;//zsd
 	double theta_cur = fmod(initial_.theta + partial, 2*PI);
 	if ((theta_cur > PI/2)&&(theta_cur < 3*PI/2)) {
 		return 0;
@@ -339,8 +343,9 @@ coordinate GeoSatPosition::coord()
 	coordinate current;
 	current.r = initial_.r;
 	current.theta = initial_.theta;
-	double fractional = 
-	    (fmod(NOW + time_advance_, period_)/period_) *2*PI; // rad
+	//double fractional = 
+	  //  (fmod(NOW + time_advance_, period_)/period_) *2*PI; // rad
+	double fractional = (fmod(time_advance_, period_)/period_) *2*PI;//zsd
 	current.phi = fmod(initial_.phi + fractional, 2*PI);
 	return current;
 }

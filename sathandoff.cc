@@ -195,6 +195,7 @@ TermLinkHandoffMgr::TermLinkHandoffMgr() : timer_(this)
 	bind("term_handoff_int_", &term_handoff_int_);
 	this->old_ragent_=0;//zsd
 	this->old_nodeid_=0;//zsd
+	this->old_address_=0;//zsd
 }
 
 // 
@@ -310,17 +311,20 @@ int TermLinkHandoffMgr::handoff()
 				// Add phy to channel's linked list of i/fces
 				slhp->phy_rx()->insertchnl(&(peer_->downlink()->ifhead_));
 
+				/*
 				//zsd
 				if(this->old_ragent_ && this->old_nodeid_){
 					peer_->setRagent(this->old_ragent_);
 					peer_->setNodeid(this->old_nodeid_);
+					peer_->setAddress(this->old_address_);
 					link_changes_flag_=FALSE;
 					printf("sathandoff.cc : peer_->setRagent(this->old_ragent_); nodeid=%d \n",peer_->nodeid());
 				}//zsd
-				else{
-					this->old_ragent_=peer_->ragent();
-					this->old_nodeid_=peer_->nodeid();
-				}//zsd
+				this->old_ragent_=peer_->ragent();
+				this->old_nodeid_=peer_->nodeid();
+				this->old_address_=peer_->address();
+				//zsd
+				*/
 			}
 		}
 	}
