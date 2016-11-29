@@ -329,7 +329,7 @@ int TermLinkHandoffMgr::handoff()
 		}
 	}
 	if (link_changes_flag_) { 
-		printf("sathandoff.cc : recompute\n");//zsd
+		//printf("sathandoff.cc : recompute\n");//zsd
 		SatRouteObject::instance().recompute();
 	}
 	if (restart_timer_flag_) {

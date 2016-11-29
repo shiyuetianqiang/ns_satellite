@@ -39,6 +39,9 @@ static const char rcsid[] =
     "@(#) $Header: /cvsroot/nsnam/ns-2/satellite/satposition.cc,v 1.9 2005/08/22 05:08:34 tomh Exp $";
 #endif
 
+//zsd
+#define _SATPOSITION_NOMOVE_
+
 #include "satposition.h"
 #include "satgeometry.h"
 #include <stdio.h>
@@ -165,9 +168,13 @@ coordinate TermSatPosition::coord()
 
 	current.r = initial_.r;
 	current.theta = initial_.theta;
-	//current.phi = fmod((initial_.phi + 
-	  //  (fmod(NOW + time_advance_,period_)/period_) * 2*PI), 2*PI);
-	current.phi = fmod((initial_.phi + (fmod( time_advance_,period_)/period_) * 2*PI), 2*PI);//zsd
+
+	//zsd
+	#ifndef _SATPOSITION_NOMOVE_
+		current.phi = fmod((initial_.phi + (fmod(NOW + time_advance_,period_)/period_) * 2*PI), 2*PI);
+	#else
+		current.phi = fmod((initial_.phi + (fmod(time_advance_,period_)/period_) * 2*PI), 2*PI);//zsd
+	#endif
 
 #ifdef POINT_TEST
 	current = initial_; // debug option to stop earth's rotation
@@ -249,9 +256,14 @@ coordinate PolarSatPosition::coord()
 {
 	coordinate current;
 	double partial;  // fraction of orbit period completed
-	//partial = 
-	  //  (fmod(NOW + time_advance_, period_)/period_) * 2*PI; //rad
-	partial = (fmod(time_advance_, period_)/period_) * 2*PI;//zsd
+
+	//zsd
+	#ifndef _SATPOSITION_NOMOVE_
+		partial = (fmod(NOW + time_advance_, period_)/period_) * 2*PI; //rad
+	#else
+		partial = (fmod(time_advance_, period_)/period_) * 2*PI;//zsd
+	#endif
+
 	double theta_cur, phi_cur, theta_new, phi_new;
 
 	// Compute current orbit-centric coordinates:
@@ -294,8 +306,13 @@ coordinate PolarSatPosition::coord()
 //
 bool PolarSatPosition::isascending()
 {	
-	//double partial = (fmod(NOW + time_advance_, period_)/period_) * 2*PI; //rad
-	double partial = (fmod(time_advance_, period_)/period_) * 2*PI;//zsd
+	//zsd
+	#ifndef _SATPOSITION_NOMOVE_
+		double partial = (fmod(NOW + time_advance_, period_)/period_) * 2*PI; //rad
+	#else
+		double partial = (fmod(time_advance_, period_)/period_) * 2*PI;//zsd
+	#endif
+
 	double theta_cur = fmod(initial_.theta + partial, 2*PI);
 	if ((theta_cur > PI/2)&&(theta_cur < 3*PI/2)) {
 		return 0;
@@ -329,9 +346,9 @@ GeoSatPosition::GeoSatPosition(double longitude)
 {
 	//initial_.r = EARTH_RADIUS + GEO_ALTITUDE;
 	initial_.r = EARTH_RADIUS + GEO_ALTITUDE;
-	printf("satposition.cc : GeoSatPosition::GeoSatPosition initial_.r = %lf\n", initial_.r);
+	//printf("satposition.cc : GeoSatPosition::GeoSatPosition initial_.r = %lf\n", initial_.r);//zsd
 	initial_.theta = PI/2;
-	printf("satposition.cc : GeoSatPosition::GeoSatPosition(double longitude):longitude=%f\n", longitude);//zsd
+	//printf("satposition.cc : GeoSatPosition::GeoSatPosition(double longitude):longitude=%f\n", longitude);//zsd
 	set(longitude);
 	type_ = POSITION_SAT_GEO;
 	period_ = EARTH_PERIOD;
@@ -343,9 +360,14 @@ coordinate GeoSatPosition::coord()
 	coordinate current;
 	current.r = initial_.r;
 	current.theta = initial_.theta;
-	//double fractional = 
-	  //  (fmod(NOW + time_advance_, period_)/period_) *2*PI; // rad
-	double fractional = (fmod(time_advance_, period_)/period_) *2*PI;//zsd
+
+	//zsd
+	#ifndef _SATPOSITION_NOMOVE_
+		double fractional = (fmod(NOW + time_advance_, period_)/period_) *2*PI; // rad
+	#else
+		double fractional = (fmod(time_advance_, period_)/period_) *2*PI;//zsd
+	#endif
+
 	current.phi = fmod(initial_.phi + fractional, 2*PI);
 	return current;
 }
